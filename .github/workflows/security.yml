@@ -1,0 +1,19 @@
+name: Build and security checks
+on: [push]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install tools
+        run: pip install pytest semgrep pip-audit
+      - name: Run tests
+        run: pytest
+      - name: Static analysis (Semgrep)
+        run: semgrep scan --config p/python --error
+      - name: Dependency scan (pip-audit)
+        run: pip-audit -r requirements.txt
